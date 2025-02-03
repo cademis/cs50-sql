@@ -1,8 +1,6 @@
-import { createClient } from '@libsql/client'
+import {Pool} from 'pg'
+import 'dotenv/config'
 
+const pool = new Pool({connectionString:process.env.POSTGRES_URL})
 
-const db = createClient({
-    url: "file:sqlite.db "
-})
-
-export { db }
+export {pool}

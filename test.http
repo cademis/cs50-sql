@@ -4,9 +4,10 @@ GET http://localhost:3000
 ###
 GET http://localhost:3000/init
 
+###
 POST http://localhost:3000/
 Content-Type: application/json
 
 {
-    "email": "test@example.com"
+    "email": "test3@example.com"
 }
