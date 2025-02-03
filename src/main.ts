@@ -3,16 +3,16 @@ import { pool } from './db'
 import e from 'express'
 
 interface User {
-    email:string
+    email: string
 }
 
 const app = express()
 app.use(express.json())
 
-app.get("/", async (req,res)=> {
+app.get("/", async (req, res) => {
     try {
-       const {rows} = await pool.query('select email from users')
-       res.status(500).send(rows)
+        const { rows } = await pool.query('select email from users')
+        res.status(500).send(rows)
     } catch (error) {
         console.log(error)
         res.sendStatus(200)
@@ -21,21 +21,21 @@ app.get("/", async (req,res)=> {
 
 app.post("/", async (req, res) => {
     try {
-        const {email} = req.body as User
+        const { email } = req.body as User
 
-        await pool.query("insert into users(email) values($1)",[email])
-        res.status(200).send({message:"succesfully inserted new row"})
+        await pool.query("insert into users(email) values($1)", [email])
+        res.status(200).send({ message: "succesfully inserted new row" })
     } catch (error) {
         console.log(error)
         res.sendStatus(500)
     }
-    
+
 })
 
-app.get("/init", async (req,res)=> {
+app.get("/init", async (req, res) => {
     try {
         await pool.query('create table if not exists users(email text)')
-        res.status(200).send({message:"success"})
+        res.status(200).send({ message: "success" })
     } catch (error) {
         console.log(error)
         res.sendStatus(500)
