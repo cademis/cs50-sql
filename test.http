@@ -1,13 +1,18 @@
-
-GET http://localhost:3000
-
-###
-GET http://localhost:3000/init
+@hostname = http://localhost:3000
 
 ###
-POST http://localhost:3000/
+GET {{hostname}}/
+
+###
+GET {{hostname}}/init
+
+###
+POST {{hostname}}
 Content-Type: application/json
 
 {
     "email": "test4@example.com"
 }
+
+###
+GET {{hostname}}/drop

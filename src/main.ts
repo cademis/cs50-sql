@@ -1,54 +1,74 @@
-import express, { Request } from 'express'
-import { sql } from './db'
+import express, { Request } from "express";
+import { sql } from "./db";
 
 interface User {
-    email: string
+  email: string;
 }
 
-const app = express()
-app.use(express.json())
+const app = express();
+app.use(express.json());
 
-app.get("/", async (req, res) => {
+type AsyncHandler = (req: Request) => Promise<{ status: number; data: any }>;
+
+const handleAsync =
+  (handler: AsyncHandler) =>
+  async (req: express.Request, res: express.Response) => {
     try {
-        const xs = await sql`select email from users`
-        res.status(500).send(xs)
+      const { status, data } = await handler(req);
+      res.status(status).send(data);
     } catch (error) {
-        console.log(error)
-        res.sendStatus(200)
+      console.log(error);
+      res.sendStatus(500);
     }
-})
+  };
 
-app.post("/", async (req, res) => {
-    try {
-        const { email } = req.body as User
+app.get(
+  "/",
+  // Then refactor your routes like this:
+  app.get(
+    "/",
+    handleAsync(async () => {
+      const xs = await sql`select email from users`;
+      return { status: 200, data: xs };
+    })
+  )
+);
 
-        await sql`insert into users(email) values(${email})`
-        res.status(200).send({ message: "succesfully inserted new row" })
-    } catch (error) {
-        console.log(error)
-        res.sendStatus(500)
-    }
+app.post(
+  "/",
+  handleAsync(async (req) => {
+    const { email } = req.body as User;
+    await sql`insert into users(email) values(${email})`;
+    return { status: 200, data: { message: "successfully inserted new row" } };
+  })
+);
 
-})
+app.get(
+  "/init",
+  handleAsync(async () => {
+    await sql`create table if not exists users(email text)`;
+    return { status: 200, data: { message: "successfully created table" } };
+  })
+);
 
-app.get("/init", async (req, res) => {
-    try {
-        await sql`create table if not exists users(email text)`
-        res.status(200).send({ message: "success" })
-    } catch (error) {
-        console.log(error)
-        res.sendStatus(500)
-    }
-})
+app.get(
+  "/init-schools",
+  handleAsync(async () => {
+    await sql`create table if not exists schools(id serial primary key)`;
+    return { status: 200, data: { message: "successfully created table" } };
+  })
+);
 
-app.get("/init-schools", async (req, res) => {
-    try {
-        await sql`create table if not exists schools(id serial primary key)`
-        res.status(200).send({ message: "success" })
-    } catch (error) {
-        console.log(error)
-        res.sendStatus(500)
-    }
-})
+app.get(
+  "/drop",
+  handleAsync(async () => {
+    const tableName = "users";
+    await sql`drop table ${tableName}`;
+    return {
+      status: 200,
+      data: { message: `successfully dropped ${tableName}` },
+    };
+  })
+);
 
-app.listen(3000, () => console.log("listening on http://localhost:3000"))
+app.listen(3000, () => console.log("listening on http://localhost:3000"));
