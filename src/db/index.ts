@@ -1,6 +1,15 @@
-import { Pool } from 'pg'
 import 'dotenv/config'
 
-const pool = new Pool({ connectionString: process.env.POSTGRES_URL })
+import postgres from 'postgres'
 
-export { pool }
+const sql = postgres({
+    host: 'localhost',
+    username: 'postgres',
+    password: 'postgres',
+    port: 5432,
+    database: 'postgres'
+})
+
+
+
+export { sql }

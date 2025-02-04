@@ -25,7 +25,8 @@
 		"vscode": {
 			"extensions": [
 				"humao.rest-client",
-				"esbenp.prettier-vscode"
+				"esbenp.prettier-vscode",
+				"thebearingedge.vscode-sql-lit"
 			]
 		}
 	}

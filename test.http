@@ -9,5 +9,5 @@ POST http://localhost:3000/
 Content-Type: application/json
 
 {
-    "email": "test3@example.com"
+    "email": "test4@example.com"
 }

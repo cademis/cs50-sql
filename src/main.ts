@@ -1,6 +1,5 @@
 import express, { Request } from 'express'
-import { pool } from './db'
-import e from 'express'
+import { sql } from './db'
 
 interface User {
     email: string
@@ -11,8 +10,8 @@ app.use(express.json())
 
 app.get("/", async (req, res) => {
     try {
-        const { rows } = await pool.query('select email from users')
-        res.status(500).send(rows)
+        const xs = await sql`select email from users`
+        res.status(500).send(xs)
     } catch (error) {
         console.log(error)
         res.sendStatus(200)
@@ -23,7 +22,7 @@ app.post("/", async (req, res) => {
     try {
         const { email } = req.body as User
 
-        await pool.query("insert into users(email) values($1)", [email])
+        await sql`insert into users(email) values(${email})`
         res.status(200).send({ message: "succesfully inserted new row" })
     } catch (error) {
         console.log(error)
@@ -34,7 +33,17 @@ app.post("/", async (req, res) => {
 
 app.get("/init", async (req, res) => {
     try {
-        await pool.query('create table if not exists users(email text)')
+        await sql`create table if not exists users(email text)`
+        res.status(200).send({ message: "success" })
+    } catch (error) {
+        console.log(error)
+        res.sendStatus(500)
+    }
+})
+
+app.get("/init-schools", async (req, res) => {
+    try {
+        await sql`create table if not exists schools(id serial primary key)`
         res.status(200).send({ message: "success" })
     } catch (error) {
         console.log(error)
